@@ -7,7 +7,15 @@
 
 #page-create-pessoa header {
   margin-top: 48px;
+  color: #919191;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
+#page-create-pessoa header:hover {
+  margin-top: 48px;
+  color: #000000;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -28,7 +36,7 @@
 }
 
 #page-create-pessoa form {
-  margin: 80px auto;
+  margin: 10px auto;
   padding: 64px;
   max-width: 730px;
   background: #FFF;
@@ -81,6 +89,7 @@
 
 #page-create-pessoa form .field input[type=text],
 #page-create-pessoa form .field input[type=email],
+#page-create-pessoa form .field input[type=Date],
 #page-create-pessoa form .field input[type=number] {
   flex: 1;
   background: #F0F0F5;

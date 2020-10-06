@@ -1,10 +1,11 @@
-import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
-import './styles.css';
-import { Link, useHistory } from 'react-router-dom';
-import { FiArrowLeft } from 'react-icons/fi';
-import api from '../../services/api';
-
+import React, { useState, ChangeEvent, FormEvent } from 'react'
+import './styles.css'
+import { Link, useHistory } from 'react-router-dom'
+import { FiArrowLeft } from 'react-icons/fi'
+import api from '../../services/api'
+ 
 const CreatePessoa = () => {
+
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
@@ -13,20 +14,19 @@ const CreatePessoa = () => {
     sexo: '0',
     nacionalidade: '',
     naturalidade: '',
-  });
-  const history = useHistory();
+  })
+  const history = useHistory()
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
-    const { name, value } = event.target;
+    const { name, value } = event.target
 
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [name]: value })
   }
   
   async function handleSubmit(event: FormEvent) {
-    event.preventDefault(); //Não recarregar tela
+    event.preventDefault() 
 
-
-    const { nome, email, cpf, dataNascimento, sexo, nacionalidade, naturalidade } = formData;
+    const { nome, email, cpf, dataNascimento, sexo, nacionalidade, naturalidade } = formData
     const data = {
       nome: nome,
       email: email,
@@ -37,17 +37,19 @@ const CreatePessoa = () => {
       naturalidade: naturalidade
     }
     
-    console.log('1')
-    const json = JSON.stringify(data);
+    const json = JSON.stringify(data)
     console.log(json)
-    console.log(api)
 
-    await api.post('pessoas', json);
-
-    alert('Pessoa criada!');
-
-    history.push('/');
-
+    await api.post('pessoas', json).then(res => {
+      console.log(res)
+      alert(res.data.message)
+      history.push('/')
+    }).catch(err => {
+      if(err.response) {
+        console.log(err)
+        alert(err.response.data.message)
+      }
+    })
   }
 
   return (
@@ -98,11 +100,12 @@ const CreatePessoa = () => {
             <div className="field">
               <label htmlFor="dataNascimento">Data de Nascimento</label>
               <input 
-                type="text"
+                type="Date"
                 name="dataNascimento"
                 id="dataNascimento"
                 onChange={handleInputChange}
               />
+
             </div>
           </div>
           <div className="field-group">
@@ -143,7 +146,7 @@ const CreatePessoa = () => {
 
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default CreatePessoa;
+export default CreatePessoa
