@@ -42,12 +42,12 @@ const CreatePessoa = () => {
 
     await api.post('pessoas', json).then(res => {
       console.log(res)
-      alert(res.data.message)
+      alert('Pessoa cadastrada com sucesso!')
       history.push('/')
     }).catch(err => {
       if(err.response) {
         console.log(err)
-        alert(err.response.data.message)
+        alert(err.response.data)
       }
     })
   }

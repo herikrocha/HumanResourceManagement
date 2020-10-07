@@ -1,17 +1,15 @@
 package br.com.hrm.service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import br.com.hrm.entity.Pessoa;
-import br.com.hrm.entity.PessoaInput;
-import br.com.hrm.exception.ResourceNotFoundException;
 import br.com.hrm.dao.PessoaDAO;
+import br.com.hrm.dto.PessoaDTO;
+import br.com.hrm.entity.Pessoa;
+import br.com.hrm.exception.ResourceNotFoundException;
 import br.com.hrm.validation.PessoaValidator;
 
 @Service
@@ -19,11 +17,8 @@ public class PessoaService {
 
     private static final String PESSOA_NOT_FOUND = "Pessoa não encontrada na base de dados com o id: ";
     private static final String PESSOAS_NOT_FOUND = "Nenhuma Pessoa foi encontrada na base de dados";
-    private static final String PESSOA_CRIADA = "Pessoa criada com sucesso!";
     private static final String PESSOA_EXCLUIDA = "Pessoa excluída com sucesso!";
-    private static final String PESSOA_ALTERADA = "Pessoa alterada com sucesso!";
 
-    //@Autowired
     private PessoaDAO pessoaDao;
 
     @Autowired
@@ -34,77 +29,67 @@ public class PessoaService {
         this.pessoaDao = pessoaDao;
     }
 
-    public Map<String, Object> getById(Long pessoaId) {
-        Map<String, Object> mapPessoa = new HashMap<>();
+    public PessoaDTO getById(Long pessoaId) {
 
         return pessoaDao.findById(pessoaId)
-                .map(pessoa -> {
-                    mapPessoa.put("Pessoa", pessoa);
-                    return mapPessoa;
-                })
+                .map(pessoa -> new PessoaDTO(
+                        pessoa.getId(), pessoa.getCpf(), pessoa.getNome(), pessoa.getSexo(), pessoa.getEmail(), pessoa.getDataNascimento(),
+                        pessoa.getNaturalidade(), pessoa.getNacionalidade()
+                ))
                 .orElseThrow(() -> new ResourceNotFoundException(PESSOA_NOT_FOUND + pessoaId));
     }
 
-    public Map<String, Object> findAll2() {
-        Map<String, Object> mapPessoas = new HashMap<>();
-        mapPessoas.put("aaaa", "sadsad");
-        return mapPessoas;
-    }
+    public List<PessoaDTO> findAll() {
+        List<PessoaDTO> pessoas = pessoaDao.findAllByOrderByNome().stream().map(pessoa -> new PessoaDTO(
+                pessoa.getId(), pessoa.getCpf(), pessoa.getNome(), pessoa.getSexo(), pessoa.getEmail(), pessoa.getDataNascimento(),
+                pessoa.getNaturalidade(), pessoa.getNacionalidade()
+        )).collect(Collectors.toList());
 
-    public Map<String, Object> findAll() {
-        Map<String, Object> mapPessoas = new HashMap<>();
-
-        List<Pessoa> pessoas = pessoaDao.findAllByOrderByNome();
         if (pessoas.isEmpty()) {
             throw new ResourceNotFoundException(PESSOAS_NOT_FOUND);
         }
-        mapPessoas.put("Pessoas", pessoas);
-        return mapPessoas;
+
+        return pessoas;
     }
 
-    public Map<String, Object> saveOrUpdate(PessoaInput pessoaInput){
-        Map<String, Object> mapPessoa = new HashMap<>();
+    public PessoaDTO saveOrUpdate(PessoaDTO pessoaDTO){
 
-        Long pessoaId = pessoaInput.getId();
+        Long pessoaId = pessoaDTO.getId();
         if (pessoaId != null) {
             return pessoaDao.findById(pessoaId)
                     .map(pessoa -> {
-                        pessoaValidator.validaEmail(pessoaInput.getEmail());
-                        pessoa.setNome(pessoaInput.getNome());
-                        pessoa.setSexo(pessoaInput.getSexo());
-                        pessoa.setEmail(pessoaInput.getEmail());
-                        pessoa.setDataNascimento(pessoaInput.getDataNascimento());
-                        pessoa.setNaturalidade(pessoaInput.getNaturalidade());
-                        pessoa.setNacionalidade(pessoaInput.getNacionalidade());
-                        mapPessoa.put("message", PESSOA_ALTERADA);
-                        mapPessoa.put("Pessoa", pessoaDao.saveAndFlush(pessoa));
-                        return mapPessoa;
+                        pessoaValidator.validaEmail(pessoaDTO.getEmail());
+                        pessoa.setNome(pessoaDTO.getNome());
+                        pessoa.setSexo(pessoaDTO.getSexo());
+                        pessoa.setEmail(pessoaDTO.getEmail());
+                        pessoa.setDataNascimento(pessoaDTO.getDataNascimento());
+                        pessoa.setNaturalidade(pessoaDTO.getNaturalidade());
+                        pessoa.setNacionalidade(pessoaDTO.getNacionalidade());
+                        pessoaDao.saveAndFlush(pessoa);
+                        return pessoaDTO;
                     }).orElseThrow(() -> new ResourceNotFoundException(PESSOA_NOT_FOUND + pessoaId));
-
         } else {
             Pessoa pessoa = new Pessoa(null,
-                    pessoaInput.getCpf(),
-                    pessoaInput.getNome(),
-                    pessoaInput.getSexo(),
-                    pessoaInput.getEmail(),
-                    pessoaInput.getDataNascimento(),
-                    pessoaInput.getNaturalidade(),
-                    pessoaInput.getNacionalidade());
+                    pessoaDTO.getCpf(),
+                    pessoaDTO.getNome(),
+                    pessoaDTO.getSexo(),
+                    pessoaDTO.getEmail(),
+                    pessoaDTO.getDataNascimento(),
+                    pessoaDTO.getNaturalidade(),
+                    pessoaDTO.getNacionalidade());
             pessoaValidator.validaCampos(pessoa);
-            mapPessoa.put("message", PESSOA_CRIADA);
-            mapPessoa.put("Pessoa", pessoaDao.saveAndFlush(pessoa));
-            return mapPessoa;
+            pessoaDao.saveAndFlush(pessoa);
+            pessoaDTO.setId(pessoa.getId());
+            return pessoaDTO;
         }
     }
 
-    public Map<String, Object> deleteById(Long pessoaId) {
-        Map<String, Object> mapPessoa = new HashMap<>();
+    public String deleteById(Long pessoaId) {
 
         return pessoaDao.findById(pessoaId)
                 .map(pessoa -> {
             pessoaDao.delete(pessoa);
-            mapPessoa.put("message", PESSOA_EXCLUIDA);
-            return mapPessoa;
+            return PESSOA_EXCLUIDA;
         }).orElseThrow(() -> new ResourceNotFoundException(PESSOA_NOT_FOUND + pessoaId));
     }
 

@@ -1,8 +1,5 @@
 package br.com.hrm.validation;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +8,6 @@ import org.springframework.stereotype.Component;
 import br.com.hrm.dao.PessoaDAO;
 import br.com.hrm.entity.Pessoa;
 import br.com.hrm.exception.InvalidArgumentException;
-import br.com.hrm.exception.ResourceNotFoundException;
 
 @Component
 public class PessoaValidator {
@@ -51,10 +47,6 @@ public class PessoaValidator {
         if (pessoaDao.existsPessoaByCpf(cpf)) {
             throw new InvalidArgumentException(CPF_EXISTENTE);
         }
-    }
-
-    public void validaDataNasc(String dataNasc) {
-        LocalDate.parse(dataNasc, DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
 }
