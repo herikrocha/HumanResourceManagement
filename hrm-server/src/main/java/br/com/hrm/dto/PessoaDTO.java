@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PessoaDTO {
+public class PessoaDTO implements DTOBase{
 
 	private Long id;
 

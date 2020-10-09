@@ -1,16 +1,25 @@
 package br.com.hrm;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import javax.inject.Inject;
 
-@RunWith(SpringRunner.class)
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import br.com.hrm.controller.PessoaController;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+
 @SpringBootTest
 public class HumanResourceManagementTest {
 
-    @Test
-    public void contextLoads() {
+    @Inject
+    private PessoaController pessoaController;
 
+    @Test
+    void contextLoads() {
+
+        assertNotNull(pessoaController);
     }
+
 }

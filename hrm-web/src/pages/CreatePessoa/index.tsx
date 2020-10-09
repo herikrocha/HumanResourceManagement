@@ -38,16 +38,14 @@ const CreatePessoa = () => {
     }
     
     const json = JSON.stringify(data)
-    console.log(json)
 
     await api.post('pessoas', json).then(res => {
-      console.log(res)
       alert('Pessoa cadastrada com sucesso!')
       history.push('/')
     }).catch(err => {
       if(err.response) {
-        console.log(err)
-        alert(err.response.data)
+        let mensagemErro = err.response.data.message !== undefined ? err.response.data.message : err.response.data
+        alert(mensagemErro)
       }
     })
   }

@@ -13,4 +13,5 @@ public interface PessoaDAO extends JpaRepository<Pessoa, Long> {
     boolean existsPessoaByCpf(String cpf);
 
     List<Pessoa> findAllByOrderByNome();
+
 }
